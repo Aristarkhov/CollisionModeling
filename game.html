@@ -1,16 +1,113 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <link rel='stylesheet' type='css' href='styles.css'> 
-  </head>
-  <body>
-    <div class="scoreboard">
-      <!-- Modify the scoreboard when important events occur in your game! -->
-      <div class="high">High score: <span>0</span></div>
-      <div class="current">Current score: <span>0</span></div>
-      <div class="collisions">Collisions: <span>0</span></div>
-    </div>
-    <script src="d3.js" charset="utf-8"></script>
-    <script src='watchout.js'></script>
-  </body>
-</html>
+<meta charset="utf-8">
+<style>
+
+    text {
+        font: bold 48px monospace;
+    }
+
+    circle {
+        stroke: #000;
+        stroke-opacity: .5;
+    }
+
+    .enter {
+        fill: green;
+    }
+
+    .update {
+        fill: #333;
+    }
+
+
+</style>
+<body>
+<script src="d3.js"></script>
+<!-- <script src="http://d3js.org/d3.v2.min.js?2.10.1"></script> -->
+
+<script>
+    var width = 1000,
+            height = 600,
+            radius=15,
+            pradius=10;
+
+    var score=0;
+
+    var svgContainer=d3.select("body")
+            .append("svg")
+            .attr("width", width)
+            .attr("height", height);
+
+    var colors=["red", "green", "blue", "purple", "magenta", "yellow", "orange", "rose"];
+
+
+
+    function initialize(num){
+        for (var i=0; i<num; ++i)
+            svgContainer.append("circle").attr("cx", Math.floor(width*Math.random()))
+                    .attr("cy", Math.floor(height*Math.random()))
+                    .attr("class", "particle")
+                    .attr("r", radius)
+                    .attr("fill", colors[Math.floor(Math.random()*colors.length)]);
+
+        svgContainer.append("circle").attr("cx", width/2)
+                .attr("class", "player")
+                .attr("cy", height/2)
+                .attr("r", pradius)
+                .attr("fill", "black");
+        var playerSelection=svgContainer.selectAll(".player");
+       // var drag=d3.behavior.drag().on("drag", dragmove);
+        playerSelection.call(d3.behavior.drag().on("drag", dragmove));
+
+
+
+        function dragmove(d) {
+//            console.log(d3.event.x);
+//            console.log(d3.event.y);
+            var dx=d3.event.x;
+            var dy=d3.event.y;
+
+            d3.select(this)
+                    .attr("cx", d3.event.x)
+                    .attr("cy", d3.event.y)
+
+
+            var selection=svgContainer.select(".particle").each(function(){
+                var st=d3.select(this);
+                var tx=st.attr("cx");
+                var ty=st.attr("cy");
+                if (sqdist([tx,ty], [dx,dy])<pradius+radius){
+                    score=0;
+                }
+
+            });
+
+        }
+
+        function sqdist(p1, p2){
+            var d1=p1[0]-p2[0];
+            var d2=p1[1]-p2[1];
+            return d1*d1+d2*d2;
+
+        }
+
+    }
+
+
+    function update(){
+        var selection=svgContainer.selectAll(".particle");
+        selection.transition().duration(750).attr("cx", function(d,i) {return Math.floor(width*Math.random())})
+                .attr("cy", function (d,i) {return Math.floor(height*Math.random())});
+
+        score+=1;
+        console.log(score);
+
+
+
+    }
+
+    initialize(30);
+    setInterval(update, 1000);
+
+
+</script>
