@@ -22,8 +22,8 @@
 
 </style>
 <body>
-<script src="d3.js"></script>
-<!-- <script src="http://d3js.org/d3.v2.min.js?2.10.1"></script> -->
+<!-- <script src="d3.js"></script> -->
+<script src="http://d3js.org/d3.v2.min.js?2.10.1"></script>
 
 <script>
     var width = 1000,
@@ -56,14 +56,12 @@
                 .attr("r", pradius)
                 .attr("fill", "black");
         var playerSelection=svgContainer.selectAll(".player");
-       // var drag=d3.behavior.drag().on("drag", dragmove);
+
         playerSelection.call(d3.behavior.drag().on("drag", dragmove));
 
 
 
         function dragmove(d) {
-//            console.log(d3.event.x);
-//            console.log(d3.event.y);
             var dx=d3.event.x;
             var dy=d3.event.y;
 
@@ -107,7 +105,7 @@
     }
 
     initialize(30);
-    setInterval(update, 1000);
+    setInterval(update, 1500);
 
 
 </script>
