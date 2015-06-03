@@ -113,21 +113,25 @@
 //                });
         selection.transition().duration(750).attr("cx", function(d,i) {return Math.floor(width*Math.random());})
                 .attrTween("cy", function(d, i,a){
-                    var player=svgContainer.select(".player");
-                    var enemy=d3.select(this);
-                    var tx=enemy.attr("cx");
-                    var ty=enemy.attr("cy");
-                    var px=player.attr("cx");
-                    var py=player.attr("cy");
-                    var dist=sqdist([tx,ty], [px,py]);
-                    dist=Math.sqrt(dist);
-                    if (dist<pradius+radius){
-                        score=0;
-                    }
+
+
                     var end=Math.floor(height*Math.random());
                     
+                    var enemy=d3.select(this);
                     return function(t){
+                        var player=svgContainer.select(".player");
+                        var tx=enemy.attr("cx");
+                        var ty=enemy.attr("cy");
+                        var px=player.attr("cx");
+                        var py=player.attr("cy");
                         var na=parseInt(a);
+                        var dist=sqdist([tx,ty], [px,py]);
+                        dist=Math.sqrt(dist);
+                        //console.log("dist, t:" + " " + dist + t)
+                        if (dist<pradius+radius){
+                            console.log("called");
+                            score=0;
+                        }
 
                         return na+(end-na)*t;
                     }
@@ -144,7 +148,7 @@
 
     }
 
-    initialize(1);
+    initialize(10);
     setInterval(update, 1000);
 
 
