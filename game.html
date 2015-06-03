@@ -37,6 +37,9 @@
             .append("svg")
             .attr("width", width)
             .attr("height", height);
+    d3.select("svg").append("text").attr("x", "40").attr("y", "40").attr("font-size", "5px").text(score);
+//    d3.select("svg").append("g");
+//    d3.select("g").append("div").attr("width", "10").attr("height", "10").text(score);
 
     var colors=["red", "green", "blue", "purple", "magenta", "yellow", "orange", "rose"];
 
@@ -116,7 +119,7 @@
 
 
                     var end=Math.floor(height*Math.random());
-                    
+
                     var enemy=d3.select(this);
                     return function(t){
                         var player=svgContainer.select(".player");
@@ -129,7 +132,7 @@
                         dist=Math.sqrt(dist);
                         //console.log("dist, t:" + " " + dist + t)
                         if (dist<pradius+radius){
-                            console.log("called");
+
                             score=0;
                         }
 
@@ -141,15 +144,22 @@
 
 
 
-        score+=1;
-        console.log(score);
+//        score+=1;
+//        console.log(score);
 
 
 
     }
 
+    function incrementScore(){
+        score+=1;
+        d3.select("text").text("Score:" + score);
+    }
+
+
     initialize(10);
     setInterval(update, 1000);
+    setInterval(incrementScore, 100);
 
 
 
