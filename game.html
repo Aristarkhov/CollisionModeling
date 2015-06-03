@@ -22,8 +22,8 @@
 
 </style>
 <body>
-<!-- <script src="d3.js"></script> -->
-<script src="http://d3js.org/d3.v2.min.js?2.10.1"></script>
+<script src="d3.js"></script>
+<!-- <script src="http://d3js.org/d3.v2.min.js?2.10.1"></script> -->
 
 <script>
     var width = 1000,
@@ -56,7 +56,6 @@
                 .attr("r", pradius)
                 .attr("fill", "black");
         var playerSelection=svgContainer.selectAll(".player");
-
         playerSelection.call(d3.behavior.drag().on("drag", dragmove));
 
 
@@ -67,35 +66,76 @@
 
             d3.select(this)
                     .attr("cx", d3.event.x)
-                    .attr("cy", d3.event.y)
+                    .attr("cy", d3.event.y);
 
-
-            var selection=svgContainer.select(".particle").each(function(){
-                var st=d3.select(this);
-                var tx=st.attr("cx");
-                var ty=st.attr("cy");
-                if (sqdist([tx,ty], [dx,dy])<pradius+radius){
-                    score=0;
-                }
-
-            });
-
+            checkForCollision();
         }
 
-        function sqdist(p1, p2){
-            var d1=p1[0]-p2[0];
-            var d2=p1[1]-p2[1];
-            return d1*d1+d2*d2;
 
-        }
+
+
+
+    }
+
+    function sqdist(p1, p2){
+        var d1=p1[0]-p2[0];
+        var d2=p1[1]-p2[1];
+        return d1*d1+d2*d2;
 
     }
 
 
+
+    function checkForCollision(){
+        var player=svgContainer.select(".player");
+
+        svgContainer.select(".particle").each(function(){
+            var st=d3.select(this);
+            var tx=st.attr("cx");
+            var ty=st.attr("cy");
+            var px=player.attr("cx");
+            var py=player.attr("cy");
+            var dist=sqdist([tx,ty], [px,py]);
+            dist=Math.sqrt(dist);
+            if (dist<pradius+radius){
+                score=0;
+            }
+
+        });
+
+    }
+
     function update(){
         var selection=svgContainer.selectAll(".particle");
-        selection.transition().duration(750).attr("cx", function(d,i) {return Math.floor(width*Math.random())})
-                .attr("cy", function (d,i) {return Math.floor(height*Math.random())});
+//        selection.transition().duration(750).attr("cx", function(d,i) {return Math.floor(width*Math.random());})
+//                .attr("cy", function (d,i) {
+//                    return Math.floor(height*Math.random());
+//                });
+        selection.transition().duration(750).attr("cx", function(d,i) {return Math.floor(width*Math.random());})
+                .attrTween("cy", function(d, i,a){
+                    var player=svgContainer.select(".player");
+                    var enemy=d3.select(this);
+                    var tx=enemy.attr("cx");
+                    var ty=enemy.attr("cy");
+                    var px=player.attr("cx");
+                    var py=player.attr("cy");
+                    var dist=sqdist([tx,ty], [px,py]);
+                    dist=Math.sqrt(dist);
+                    if (dist<pradius+radius){
+                        score=0;
+                    }
+                    var end=Math.floor(height*Math.random());
+                    
+                    return function(t){
+                        var na=parseInt(a);
+
+                        return na+(end-na)*t;
+                    }
+
+                });
+
+
+
 
         score+=1;
         console.log(score);
@@ -104,8 +144,9 @@
 
     }
 
-    initialize(30);
-    setInterval(update, 1500);
+    initialize(1);
+    setInterval(update, 1000);
+
 
 
 </script>
