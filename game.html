@@ -19,11 +19,24 @@
         fill: #333;
     }
 
+    h1 {
+        font: bold 16px monospace;
+        text-align: right;
+        margin: 0 0 0 0;
+    }
+
+    svg {
+        border:1px solid black;
+    }
+
+
+
+
 
 </style>
 <body>
-<script src="d3.js"></script>
-<!-- <script src="http://d3js.org/d3.v2.min.js?2.10.1"></script> -->
+
+<script src="http://d3js.org/d3.v2.min.js?2.10.1"></script>
 
 <script>
     var width = 1000,
@@ -31,19 +44,19 @@
             radius=15,
             pradius=10;
 
-    var score=0;
+    var score = 0,
+            highscore=0;
+    var borderfactor=1.15;
+
+    d3.select("body").append("h1").attr("class","hs").text("High Score: " + highscore);
+    d3.select("body").append("h1").attr("class", "score").text("Score: "+ score);
 
     var svgContainer=d3.select("body")
             .append("svg")
             .attr("width", width)
             .attr("height", height);
-    d3.select("svg").append("text").attr("x", "40").attr("y", "40").attr("font-size", "5px").text(score);
-//    d3.select("svg").append("g");
-//    d3.select("g").append("div").attr("width", "10").attr("height", "10").text(score);
 
-    var colors=["red", "green", "blue", "purple", "magenta", "yellow", "orange", "rose"];
-
-
+    var colors=["red", "green", "blue", "purple", "magenta", "yellow", "orange", "pink"];
 
     function initialize(num){
         for (var i=0; i<num; ++i)
@@ -67,9 +80,14 @@
             var dx=d3.event.x;
             var dy=d3.event.y;
 
+            dx=Math.min(dx, width-pradius);
+            dy=Math.min(dy, height-pradius);
+            dx=Math.max(dx, pradius);
+            dy=Math.max(dy, pradius);
+
             d3.select(this)
-                    .attr("cx", d3.event.x)
-                    .attr("cy", d3.event.y);
+                    .attr("cx", dx)
+                    .attr("cy", dy);
 
             checkForCollision();
         }
@@ -110,15 +128,11 @@
 
     function update(){
         var selection=svgContainer.selectAll(".particle");
-//        selection.transition().duration(750).attr("cx", function(d,i) {return Math.floor(width*Math.random());})
-//                .attr("cy", function (d,i) {
-//                    return Math.floor(height*Math.random());
-//                });
-        selection.transition().duration(750).attr("cx", function(d,i) {return Math.floor(width*Math.random());})
+        selection.transition().duration(750).attr("cx", function(d,i) {return Math.floor(borderfactor*width*Math.random());})
                 .attrTween("cy", function(d, i,a){
 
 
-                    var end=Math.floor(height*Math.random());
+                    var end=Math.floor(borderfactor*height*Math.random());
 
                     var enemy=d3.select(this);
                     return function(t){
@@ -130,7 +144,6 @@
                         var na=parseInt(a);
                         var dist=sqdist([tx,ty], [px,py]);
                         dist=Math.sqrt(dist);
-                        //console.log("dist, t:" + " " + dist + t)
                         if (dist<pradius+radius){
 
                             score=0;
@@ -141,25 +154,21 @@
 
                 });
 
-
-
-
-//        score+=1;
-//        console.log(score);
-
-
-
     }
 
     function incrementScore(){
         score+=1;
-        d3.select("text").text("Score:" + score);
+        d3.select("h1.score").text("Score: " + score);
+        if (score>highscore){
+            highscore=score;
+            d3.select("h1.hs").text("Highscore: " + highscore);
+        }
     }
 
 
-    initialize(10);
+    initialize(26);
     setInterval(update, 1000);
-    setInterval(incrementScore, 100);
+    setInterval(incrementScore, 150);
 
 
 
